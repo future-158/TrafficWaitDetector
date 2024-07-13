@@ -1,5 +1,6 @@
 import ffmpeg
 from typing import Union
+import matplotlib.pyplot as plt
 from scipy.ndimage import binary_closing
 import numpy as np
 import pandas as pd
@@ -55,7 +56,10 @@ for emb, next_emb in zip_longest(
         sims.append(sim)
 
 
+
 ser = pd.Series(sims)
+
+
 
 # you can use lower window than min_length. ex. window = fps, min_length = fps * 3
 
@@ -83,6 +87,18 @@ for group, gdf in signal[signal==True].groupby( (signal==False).cumsum()):
     if length > min_length:
         segments.append((start, length))
  
+
+
+# visualizing
+ser_avg = ser.rolling(window=window, center=True).mean()
+plt.plot(ser_avg)
+for start, length in segments:
+    plt.axvspan(start, start+length, color="red", alpha=0.5)
+plt.xlim([0,15000])
+plt.savefig(f"artifact/ts_{window}avg.png") 
+
+
+
 
 
 def convert_seconds_to_hhmmss(seconds):
@@ -150,5 +166,9 @@ def extract_video_segments(
 
 out_dir = Path("./artifact")
 extract_video_segments(video_path, segments, out_dir=out_dir, convert_x264=True)
+
+
+
+
 
 

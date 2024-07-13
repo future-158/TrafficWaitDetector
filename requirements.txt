@@ -8,3 +8,4 @@ open_clip_torch
 yt-dlp
 scipy
 opencv-python
+matplotlib
