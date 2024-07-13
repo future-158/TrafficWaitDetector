@@ -47,11 +47,9 @@ with tqdm.tqdm(desc="done: ") as pbar:
         embeddings.append(embedding)
 
 sims = []
-for emb, next_emb in enumerate(
-    zip_longest(
+for emb, next_emb in zip_longest(
         embeddings,embeddings[1:]
-    )
-):
+    ):
     if next_emb is not None:
         sim = np.dot(emb, next_emb)
         sims.append(sim)
@@ -60,14 +58,15 @@ for emb, next_emb in enumerate(
 ser = pd.Series(sims)
 
 # you can use lower window than min_length. ex. window = fps, min_length = fps * 3
+
 window = min_length = fps * 3 
 
-fps = int(cap.get(cv2.CAP_PROP_FPS))
 ser_std = ser.rolling(window=window, center=True).std()
 
 # 10% is good default. you can lower it for better recall
 threshold = ser_std.quantile(0.1)
 
+# find plateau
 signal = ser_std < threshold
 
 # binary closing to fill the gap. you can refer to 
@@ -79,11 +78,13 @@ segments = []
 
 # find consecutive true blocks. pandas make this oneline. you can i add explanation in README file
 for group, gdf in signal[signal==True].groupby( (signal==False).cumsum()):
-    start = gdf.index[0]
+    start = gdf.index[0].item()
     length = len(gdf)
     if length > min_length:
         segments.append((start, length))
  
+
+
 def convert_seconds_to_hhmmss(seconds):
     hours = seconds // 3600
     minutes = (seconds % 3600) // 60
@@ -91,7 +92,6 @@ def convert_seconds_to_hhmmss(seconds):
     return f"{hours:02}:{minutes:02}:{secs:02}"
 
 
-fps = int(cap.get(cv2.CAP_PROP_FPS))
 for start, length in segments:
     print(f"{convert_seconds_to_hhmmss(start//fps)} - {convert_seconds_to_hhmmss((start+length)//fps)}")
 
