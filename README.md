@@ -13,7 +13,7 @@ These embeddings are normalized to unit length.
 The cosine similarity between consecutive frame embeddings is calculated. Specifically, similarities are computed for pairs of frames such as (frame1, frame2), (frame2, frame3), etc.
 These similarity scores provide a measure of how much each frame differs from the next, with higher scores indicating more similar frames.
 
-![image](artifact/ts_90avg.png)
+![image](assets/ts_90avg.png)
 
 ### 3. Identification of Low Activity Segments:
 
